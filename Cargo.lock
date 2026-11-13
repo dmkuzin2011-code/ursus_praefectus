@@ -1002,8 +1002,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "ursus"
-version = "0.1.0"
+name = "ursus_praefectus"
+version = "0.1.1"
 dependencies = [
  "hickory-resolver",
  "tokio",

@@ -93,7 +93,7 @@ pub async fn validate_ipv6(ip: &str) -> Result<(), IpError> {
             return Err(IpError::InvalidIpv6);
         }
         let mut all = left;
-        all.extend(std::iter::repeat("0").take(8 - total));
+        all.extend(std::iter::repeat_n("0", 8 - total));
         all.extend(right);
         all
     } else {

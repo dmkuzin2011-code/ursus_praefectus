@@ -85,7 +85,7 @@ pub async fn validate_url(url: &str) -> Result<(), UrlError> {
     }
 
     let host_end = rest
-        .find(|c| c == '/' || c == '?' || c == '#')
+        .find(['/', '?', '#'])
         .unwrap_or(rest.len());
     let mut host = &rest[..host_end];
 

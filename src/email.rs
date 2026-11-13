@@ -113,7 +113,7 @@ pub async fn validate_email_format(email: &str) -> Result<(), EmailError> {
         }
     }
 
-    let tld = domain.split('.').last().unwrap_or("");
+    let tld = domain.split('.').next_back().unwrap_or("");
     if tld.len() < 2 {
         return Err(EmailError::InvalidDomain);
     }
