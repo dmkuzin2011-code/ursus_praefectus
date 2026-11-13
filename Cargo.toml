@@ -1,0 +1,33 @@
+[package]
+name = "ursus"
+version = "0.2.0"
+edition = "2024"
+description = "Library for data validation: email, URL, IP, phone, password, and counts."
+authors = ["Ursus"]
+license = "Apache-2.0"
+
+[dependencies]
+# Tokio async runtime — required for async DNS resolution in email validation
+tokio = { version = "1.54.1", features = ["net", "rt", "macros", "time"] }
+# Async DNS resolver built on top of tokio — used to check MX records of email domains
+hickory-resolver = { version = "0.26", optional = true, features = ["tokio", "system-config"] }
+
+[dev-dependencies]
+
+[features]
+# Enable all validation modules by default
+default = ["email", "url", "ip", "phone"]
+# Email validation with format check only (no DNS)
+email = []
+# Email validation with async DNS MX record lookup (requires tokio + hickory-resolver)
+email-dns = ["dep:hickory-resolver", "email"]
+# URL validation
+url = []
+# IP address validation (IPv4/IPv6)
+ip = []
+# Phone number validation
+phone = []
+
+[lib]
+name = "ursus_praefectus"
+path = "src/lib.rs"
