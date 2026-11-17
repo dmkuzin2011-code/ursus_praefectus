@@ -4,7 +4,7 @@ version = "0.1.1"
 readme = "README.md"
 edition = "2024"
 description = "Library for data validation: email, URL, IP, phone, password, and counts."
-authors = ["Ursus"]
+authors = ["Dekavan"]
 license = "Apache-2.0"
 
 [dependencies]

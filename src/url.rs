@@ -3,6 +3,8 @@
 //! Provides synchronous validation for URLs (HTTP/HTTPS/FTP/etc.).
 //! Checks scheme, host, and basic structure without performing network requests.
 
+use crate::Ursus;
+
 
 /// Errors that can occur during URL validation.
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -66,6 +68,8 @@ const VALID_SCHEMES: &[&str] = &["http", "https", "ftp", "ws", "wss"];
 /// assert!(validate_url("random string").await.is_err());
 /// # }
 /// ```
+/// 
+impl  Ursus {
 #[cfg(feature = "url")]
 pub async fn validate_url(url: &str) -> Result<(), UrlError> {
     if url.is_empty() {
@@ -122,30 +126,30 @@ pub async fn validate_url(url: &str) -> Result<(), UrlError> {
 
     Ok(())
 }
-
+}
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[tokio::test]
     async fn test_valid_urls() {
-        assert!(validate_url("https://www.example.com").await.is_ok());
-        assert!(validate_url("http://example.com").await.is_ok());
-        assert!(validate_url("https://localhost:8080/path?q=1#sec").await.is_ok());
-        assert!(validate_url("ftp://files.server.org").await.is_ok());
-        assert!(validate_url("ws://echo.websocket.org").await.is_ok());
-        assert!(validate_url("wss://secure.example.com").await.is_ok());
+        assert!(Ursus::validate_url("https://www.example.com").await.is_ok());
+        assert!(Ursus::validate_url("http://example.com").await.is_ok());
+        assert!(Ursus::validate_url("https://localhost:8080/path?q=1#sec").await.is_ok());
+        assert!(Ursus::validate_url("ftp://files.server.org").await.is_ok());
+        assert!(Ursus::validate_url("ws://echo.websocket.org").await.is_ok());
+        assert!(Ursus::validate_url("wss://secure.example.com").await.is_ok());
     }
 
     #[tokio::test]
     async fn test_invalid_urls() {
-        assert!(validate_url("").await.is_err());
-        assert!(validate_url("example.com").await.is_err());
-        assert!(validate_url("ftp://").await.is_err());
-        assert!(validate_url("http://").await.is_err());
-        assert!(validate_url("ht*tp://example.com").await.is_err());
-        assert!(validate_url("http://-example.com").await.is_err());
-        assert!(validate_url("http://example..com").await.is_err());
+        assert!(Ursus::validate_url("").await.is_err());
+        assert!(Ursus::validate_url("example.com").await.is_err());
+        assert!(Ursus::validate_url("ftp://").await.is_err());
+        assert!(Ursus::validate_url("http://").await.is_err());
+        assert!(Ursus::validate_url("ht*tp://example.com").await.is_err());
+        assert!(Ursus::validate_url("http://-example.com").await.is_err());
+        assert!(Ursus::validate_url("http://example..com").await.is_err());
     }
 
     #[test]

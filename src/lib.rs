@@ -5,3 +5,4 @@ pub mod password;
 pub mod phone;
 pub mod specific_errors;
 pub mod url;
+pub struct Ursus;

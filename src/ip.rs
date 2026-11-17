@@ -1,5 +1,7 @@
 ﻿//! # IP address validation module
 
+use crate::Ursus;
+
 /// Errors that can occur during IP address validation.
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum IpError {
@@ -28,6 +30,7 @@ impl std::error::Error for IpError {}
 
 /// Validate an IPv4 address (dotted-decimal notation, e.g. `192.168.1.1`).
 
+impl Ursus {
 #[cfg(feature = "ip")]
 pub async fn validate_ipv4(ip: &str) -> Result<(), IpError> {
     if ip.is_empty() {
@@ -128,57 +131,57 @@ pub async fn validate_ip(ip: &str) -> Result<(), IpError> {
     }
 
     if ip.contains(':') {
-        validate_ipv6(ip).await.map_err(|_| IpError::InvalidIp)
+        Ursus::validate_ipv6(ip).await.map_err(|_| IpError::InvalidIp)
     } else {
-        validate_ipv4(ip).await.map_err(|_| IpError::InvalidIp)
+        Ursus::validate_ipv4(ip).await.map_err(|_| IpError::InvalidIp)
     }
 }
-
+}
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[tokio::test]
     async fn test_valid_ipv4() {
-        assert!(validate_ipv4("192.168.1.1").await.is_ok());
-        assert!(validate_ipv4("0.0.0.0").await.is_ok());
-        assert!(validate_ipv4("255.255.255.255").await.is_ok());
-        assert!(validate_ipv4("1.2.3.4").await.is_ok());
+        assert!(Ursus::validate_ipv4("192.168.1.1").await.is_ok());
+        assert!(Ursus::validate_ipv4("0.0.0.0").await.is_ok());
+        assert!(Ursus::validate_ipv4("255.255.255.255").await.is_ok());
+        assert!(Ursus::validate_ipv4("1.2.3.4").await.is_ok());
     }
 
     #[tokio::test]
     async fn test_invalid_ipv4() {
-        assert!(validate_ipv4("").await.is_err());
-        assert!(validate_ipv4("256.1.1.1").await.is_err());
-        assert!(validate_ipv4("1.2.3").await.is_err());
-        assert!(validate_ipv4("1.2.3.4.5").await.is_err());
-        assert!(validate_ipv4("abc.def.ghi.jkl").await.is_err());
-        assert!(validate_ipv4("01.2.3.4").await.is_err());
+        assert!(Ursus::validate_ipv4("").await.is_err());
+        assert!(Ursus::validate_ipv4("256.1.1.1").await.is_err());
+        assert!(Ursus::validate_ipv4("1.2.3").await.is_err());
+        assert!(Ursus::validate_ipv4("1.2.3.4.5").await.is_err());
+        assert!(Ursus::validate_ipv4("abc.def.ghi.jkl").await.is_err());
+        assert!(Ursus::validate_ipv4("01.2.3.4").await.is_err());
     }
 
     #[tokio::test]
     async fn test_valid_ipv6() {
-        assert!(validate_ipv6("2001:db8::1").await.is_ok());
-        assert!(validate_ipv6("::1").await.is_ok());
-        assert!(validate_ipv6("::").await.is_ok());
-        assert!(validate_ipv6("fe80::1").await.is_ok());
-        assert!(validate_ipv6("2001:0db8:0000:0000:0000:0000:0000:0001").await.is_ok());
+        assert!(Ursus::validate_ipv6("2001:db8::1").await.is_ok());
+        assert!(Ursus::validate_ipv6("::1").await.is_ok());
+        assert!(Ursus::validate_ipv6("::").await.is_ok());
+        assert!(Ursus::validate_ipv6("fe80::1").await.is_ok());
+        assert!(Ursus::validate_ipv6("2001:0db8:0000:0000:0000:0000:0000:0001").await.is_ok());
     }
 
     #[tokio::test]
     async fn test_invalid_ipv6() {
-        assert!(validate_ipv6("").await.is_err());
-        assert!(validate_ipv6("not-ipv6").await.is_err());
-        assert!(validate_ipv6("2001:db8:::1").await.is_err());
-        assert!(validate_ipv6("gggg::1").await.is_err());
+        assert!(Ursus::validate_ipv6("").await.is_err());
+        assert!(Ursus::validate_ipv6("not-ipv6").await.is_err());
+        assert!(Ursus::validate_ipv6("2001:db8:::1").await.is_err());
+        assert!(Ursus::validate_ipv6("gggg::1").await.is_err());
     }
 
     #[tokio::test]
     async fn test_validate_ip() {
-        assert!(validate_ip("10.0.0.1").await.is_ok());
-        assert!(validate_ip("::1").await.is_ok());
-        assert!(validate_ip("invalid").await.is_err());
-        assert!(validate_ip("").await.is_err());
+        assert!(Ursus::validate_ip("10.0.0.1").await.is_ok());
+        assert!(Ursus::validate_ip("::1").await.is_ok());
+        assert!(Ursus::validate_ip("invalid").await.is_err());
+        assert!(Ursus::validate_ip("").await.is_err());
     }
 
     #[test]

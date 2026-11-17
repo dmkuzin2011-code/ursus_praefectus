@@ -9,6 +9,8 @@
 //! - `email` — basic format validation (always available, no extra dependencies)
 //! - `email-dns` — async DNS MX record lookup (requires `tokio` + `hickory-resolver`)
 
+use crate::Ursus;
+
 
 /// Errors that can occur during email validation.
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -58,6 +60,7 @@ impl std::error::Error for EmailError {}
 ///
 /// This does **not** perform any network/DNS queries.
 
+impl Ursus{
 #[cfg(feature = "email")]
 pub async fn validate_email_format(email: &str) -> Result<(), EmailError> {
     if email.is_empty() {
@@ -156,7 +159,7 @@ pub async fn validate_email_dns(email: &str) -> Result<(), EmailError> {
         Err(e) => Err(EmailError::DnsLookupFailed(e.to_string())),
     }
 }
-
+}
 /// Convenience function: validate email format (and DNS if `email-dns` is enabled).
 ///
 /// - With only `email` feature: performs format check only.
@@ -168,13 +171,13 @@ pub async fn validate_email_dns(email: &str) -> Result<(), EmailError> {
 /// # use ursus_praefectus::email::validate_email;
 /// # #[tokio::main(flavor="current_thread")]
 /// # async fn main() {
-/// assert!(validate_email("test@example.com").await.is_ok());
-/// assert!(validate_email("bad-email").await.is_err());
+/// assert!(Ursus::validate_email("test@example.com").await.is_ok());
+/// assert!(Ursus::validate_email("bad-email").await.is_err());
 /// # }
 /// ```
 #[cfg(feature = "email")]
 pub async fn validate_email(email: &str) -> Result<(), EmailError> {
-    validate_email_format(email).await
+    Ursus::validate_email_format(email).await
 }
 
 #[cfg(test)]
@@ -183,24 +186,24 @@ mod tests {
 
     #[tokio::test]
     async fn test_valid_emails() {
-        assert!(validate_email_format("user@example.com").await.is_ok());
-        assert!(validate_email_format("alice.bob@mail.server.org").await.is_ok());
-        assert!(validate_email_format("user+tag@gmail.com").await.is_ok());
-        assert!(validate_email_format("user_name@sub.domain.co.uk").await.is_ok());
+        assert!(Ursus::validate_email_format("user@example.com").await.is_ok());
+        assert!(Ursus::validate_email_format("alice.bob@mail.server.org").await.is_ok());
+        assert!(Ursus::validate_email_format("user+tag@gmail.com").await.is_ok());
+        assert!(Ursus::validate_email_format("user_name@sub.domain.co.uk").await.is_ok());
     }
 
     #[tokio::test]
     async fn test_invalid_emails() {
-        assert!(validate_email_format("").await.is_err());
-        assert!(validate_email_format("noatsign.com").await.is_err());
-        assert!(validate_email_format("@example.com").await.is_err());
-        assert!(validate_email_format("user@").await.is_err());
-        assert!(validate_email_format("user@.com").await.is_err());
-        assert!(validate_email_format("user@domain").await.is_err());
-        assert!(validate_email_format("user@-domain.com").await.is_err());
-        assert!(validate_email_format("user@domain.c").await.is_err());
-        assert!(validate_email_format("..user@example.com").await.is_err());
-        assert!(validate_email_format("user..name@example.com").await.is_err());
+        assert!(Ursus::validate_email_format("").await.is_err());
+        assert!(Ursus::validate_email_format("noatsign.com").await.is_err());
+        assert!(Ursus::validate_email_format("@example.com").await.is_err());
+        assert!(Ursus::validate_email_format("user@").await.is_err());
+        assert!(Ursus::validate_email_format("user@.com").await.is_err());
+        assert!(Ursus::validate_email_format("user@domain").await.is_err());
+        assert!(Ursus::validate_email_format("user@-domain.com").await.is_err());
+        assert!(Ursus::validate_email_format("user@domain.c").await.is_err());
+        assert!(Ursus::validate_email_format("..user@example.com").await.is_err());
+        assert!(Ursus::validate_email_format("user..name@example.com").await.is_err());
     }
 
     #[test]

@@ -50,9 +50,9 @@ It performs:
 
 | Function | Description |
 |----------|-------------|
-| `validate_email(email)` | Format-only validation |
-| `validate_email_format(email)` | Syntax-only check (no network) |
-| `validate_email_dns(email)` | Format + async DNS MX lookup (requires `email-dns`) |
+| `Ursus::validate_email(email)` | Format-only validation |
+| `Ursus::validate_email_format(email)` | Syntax-only check (no network) |
+| `Ursus::validate_email_dns(email)` | Format + async DNS MX lookup (requires `email-dns`) |
 
 **Errors:** `EmailError` — `EmptyInput`, `MissingAtSign`, `EmptyLocalPart`, `EmptyDomain`, `InvalidLocalPart`, `InvalidDomain`, `NoMxRecords`, `DnsLookupFailed`
 
@@ -60,7 +60,7 @@ It performs:
 
 | Function | Description |
 |----------|-------------|
-| `validate_url(url)` | Validates scheme, host, and basic URL structure |
+| `Ursus::validate_url(url)` | Validates scheme, host, and basic URL structure |
 
 **Supported schemes:** `http`, `https`, `ftp`, `ws`, `wss`
 
@@ -70,9 +70,9 @@ It performs:
 
 | Function | Description |
 |----------|-------------|
-| `validate_ipv4(ip)` | Validates IPv4 dotted-decimal address |
-| `validate_ipv6(ip)` | Validates IPv6 colon-hex address (supports `::` compression) |
-| `validate_ip(ip)` | Tries IPv4, then IPv6 |
+| `Ursus::validate_ipv4(ip)` | Validates IPv4 dotted-decimal address |
+| `Ursus::validate_ipv6(ip)` | Validates IPv6 colon-hex address (supports `::` compression) |
+| `Ursus::validate_ip(ip)` | Tries IPv4, then IPv6 |
 
 **Errors:** `IpError` — `EmptyInput`, `InvalidIpv4`, `InvalidIpv6`, `InvalidIp`
 
@@ -80,7 +80,7 @@ It performs:
 
 | Function | Description |
 |----------|-------------|
-| `validate_phone(phone)` | Validates international phone number (7–15 digits, optional `+` prefix) |
+| `Ursus::validate_phone(phone)` | Validates international phone number (7–15 digits, optional `+` prefix) |
 
 **Errors:** `PhoneError` — `EmptyInput`, `InvalidCharacters`, `TooShort`, `TooLong`
 
@@ -88,10 +88,10 @@ It performs:
 
 | Function | Description |
 |----------|-------------|
-| `validate_min_len(password, size)` | Checks minimum length |
-| `validate_max_len(password, size)` | Checks maximum length |
-| `compare_case_sensitive(password, correct)` | Case-sensitive comparison |
-| `compare_case_insensitive(password, correct)` | Case-insensitive comparison |
+| `Ursus::validate_min_len(password, size)` | Checks minimum length |
+| `Ursus::validate_max_len(password, size)` | Checks maximum length |
+| `Ursus::compare_case_sensitive(password, correct)` | Case-sensitive comparison |
+| `Ursus::compare_case_insensitive(password, correct)` | Case-insensitive comparison |
 
 **Errors:** `PasswordError` — `TooShort`, `TooLong`, `WrongPassword`
 
@@ -99,7 +99,7 @@ It performs:
 
 | Function | Description |
 |----------|-------------|
-| `count_occurrences(collection, target)` | Counts occurrences of `target` in collection |
+| `Ursus::count_occurrences(collection, target)` | Counts occurrences of `target` in collection |
 
 **Errors:** `Count` — `EmptyError`
 
