@@ -59,13 +59,13 @@ const VALID_SCHEMES: &[&str] = &["http", "https", "ftp", "ws", "wss"];
 /// # Example
 ///
 /// ```
-/// # use ursus_praefectus::url::validate_url;
+/// # use ursus_praefectus::Ursus;
 /// # #[tokio::main(flavor="current_thread")]
 /// # async fn main() {
-/// assert!(validate_url("https://example.com").await.is_ok());
-/// assert!(validate_url("http://localhost:3000").await.is_ok());
-/// assert!(validate_url("ftp://files.example.com").await.is_ok());
-/// assert!(validate_url("random string").await.is_err());
+/// assert!(Ursus::validate_url("https://example.com").await.is_ok());
+/// assert!(Ursus::validate_url("http://localhost:3000").await.is_ok());
+/// assert!(Ursus::validate_url("ftp://files.example.com").await.is_ok());
+/// assert!(Ursus::validate_url("random string").await.is_err());
 /// # }
 /// ```
 /// 

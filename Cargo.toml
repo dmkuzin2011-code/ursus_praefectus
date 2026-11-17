@@ -17,7 +17,7 @@ hickory-resolver = { version = "0.26", optional = true, features = ["tokio", "sy
 
 [features]
 # Enable all validation modules by default
-default = ["email", "url", "ip", "phone"]
+default = ["email", "url", "ip", "phone", "clear"]
 # Email validation with format check only (no DNS)
 email = []
 # Email validation with async DNS MX record lookup (requires tokio + hickory-resolver)
@@ -28,6 +28,8 @@ url = []
 ip = []
 # Phone number validation
 phone = []
+# Collection sanitization — remove unwanted values from a Vec
+clear = []
 
 [lib]
 name = "ursus_praefectus"

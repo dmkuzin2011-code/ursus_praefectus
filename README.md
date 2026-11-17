@@ -5,7 +5,7 @@
 
 # Ursus — Data Validation Library
 
-**Ursus** is a lightweight Rust library for data validation. It provides validation for email addresses (with optional async DNS MX lookup via tokio), URLs, IPv4/IPv6 addresses, phone numbers, passwords, and occurrence counting in collections.
+**Ursus** is a lightweight Rust library for data validation and sanitization. It provides validation for email addresses (with optional async DNS MX lookup via tokio), URLs, IPv4/IPv6 addresses, phone numbers, passwords, occurrence counting in collections, and collection sanitization.
 
 ---
 
@@ -29,7 +29,8 @@ Ursus uses feature flags to let you opt into only the modules you need:
 | `url` | URL format validation |
 | `ip` | IPv4/IPv6 address validation |
 | `phone` | Phone number validation |
-| `default` | Enables `email`, `url`, `ip`, `phone` |
+| `clear` | Collection sanitization — remove unwanted values from a `Vec` |
+| `default` | Enables `email`, `url`, `ip`, `phone`, `clear` |
 
 ---
 
@@ -103,7 +104,17 @@ It performs:
 
 **Errors:** `Count` — `EmptyError`
 
+### Clear module (`ursus::clear`)
+
+| Function | Description |
+|----------|-------------|
+| `Ursus::clear_collection(collection, delete_values)` | Removes specified values from a mutable `Vec` in-place |
+
+**Errors:** `ClearedError` — `EmptyInput`
+
 ---
+
+Full documentation is available in [`DOCUMENTATION.md`](DOCUMENTATION.md).
 
 ## 🛠 Running Tests
 

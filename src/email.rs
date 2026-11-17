@@ -1,4 +1,4 @@
-//! # Email validation module
+﻿//! # Email validation module
 //!
 //! Provides validation for email addresses:
 //! - **Format validation** (syntax check: `local-part@domain`)
@@ -123,6 +123,7 @@ pub async fn validate_email_format(email: &str) -> Result<(), EmailError> {
 
     Ok(())
 }
+}
 
 /// Validate an email address by checking its format **and** performing an
 /// async DNS MX record lookup for the domain.
@@ -131,53 +132,55 @@ pub async fn validate_email_format(email: &str) -> Result<(), EmailError> {
 /// `hickory-resolver`).
 
 
-#[cfg(all(feature = "email-dns", feature = "email"))]
-pub async fn validate_email_dns(email: &str) -> Result<(), EmailError> {
-    // First, validate the format asynchronously
-    validate_email_format(email).await?;
+impl Ursus {
+    #[cfg(all(feature = "email-dns", feature = "email"))]
+    pub async fn validate_email_dns(email: &str) -> Result<(), EmailError> {
+        // First, validate the format asynchronously
+        Self::validate_email_format(email).await?;
 
-    let domain = email.split('@').nth(1).unwrap_or("");
+        let domain = email.split('@').nth(1).unwrap_or("");
 
-    // Perform async DNS MX record lookup using hickory-resolver on tokio
-    let builder = match hickory_resolver::TokioResolver::builder_tokio() {
-        Ok(b) => b,
-        Err(e) => return Err(EmailError::DnsLookupFailed(e.to_string())),
-    };
-    let resolver: hickory_resolver::TokioResolver = match builder.build() {
-        Ok(r) => r,
-        Err(e) => return Err(EmailError::DnsLookupFailed(e.to_string())),
-    };
+        // Perform async DNS MX record lookup using hickory-resolver on tokio
+        let builder = match hickory_resolver::TokioResolver::builder_tokio() {
+            Ok(b) => b,
+            Err(e) => return Err(EmailError::DnsLookupFailed(e.to_string())),
+        };
+        let resolver: hickory_resolver::TokioResolver = match builder.build() {
+            Ok(r) => r,
+            Err(e) => return Err(EmailError::DnsLookupFailed(e.to_string())),
+        };
 
-    match resolver.mx_lookup(domain).await {
-        Ok(mx_records) => {
-            if mx_records.answers().is_empty() {
-                Err(EmailError::NoMxRecords)
-            } else {
-                Ok(())
+        match resolver.mx_lookup(domain).await {
+            Ok(mx_records) => {
+                if mx_records.answers().is_empty() {
+                    Err(EmailError::NoMxRecords)
+                } else {
+                    Ok(())
+                }
             }
+            Err(e) => Err(EmailError::DnsLookupFailed(e.to_string())),
         }
-        Err(e) => Err(EmailError::DnsLookupFailed(e.to_string())),
     }
-}
-}
-/// Convenience function: validate email format (and DNS if `email-dns` is enabled).
-///
-/// - With only `email` feature: performs format check only.
-/// - With `email-dns` feature: performs format check + async DNS MX lookup.
-///
-/// # Example
-///
-/// ```rust
-/// # use ursus_praefectus::email::validate_email;
-/// # #[tokio::main(flavor="current_thread")]
-/// # async fn main() {
-/// assert!(Ursus::validate_email("test@example.com").await.is_ok());
-/// assert!(Ursus::validate_email("bad-email").await.is_err());
-/// # }
-/// ```
-#[cfg(feature = "email")]
-pub async fn validate_email(email: &str) -> Result<(), EmailError> {
-    Ursus::validate_email_format(email).await
+
+    /// Convenience function: validate email format (and DNS if `email-dns` is enabled).
+    ///
+    /// - With only `email` feature: performs format check only.
+    /// - With `email-dns` feature: performs format check + async DNS MX lookup.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use ursus_praefectus::Ursus;
+    /// # #[tokio::main(flavor="current_thread")]
+    /// # async fn main() {
+    ///     assert!(Ursus::validate_email("test@example.com").await.is_ok());
+    ///     assert!(Ursus::validate_email("bad-email").await.is_err());
+    /// # }
+    /// ```
+    #[cfg(feature = "email")]
+    pub async fn validate_email(email: &str) -> Result<(), EmailError> {
+        Self::validate_email_format(email).await
+    }
 }
 
 #[cfg(test)]
@@ -215,3 +218,4 @@ mod tests {
         );
     }
 }
+
