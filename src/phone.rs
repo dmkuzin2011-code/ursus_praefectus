@@ -5,32 +5,7 @@
 //! (spaces, dashes, parentheses, dots).
 
 use crate::Ursus;
-
-/// Errors that can occur during phone number validation.
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum PhoneError {
-    /// The input string is empty.
-    EmptyInput,
-    /// The phone number contains invalid characters.
-    InvalidCharacters,
-    /// The phone number has too few digits.
-    TooShort,
-    /// The phone number has too many digits.
-    TooLong,
-}
-
-impl std::fmt::Display for PhoneError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PhoneError::EmptyInput => write!(f, "phone number is empty"),
-            PhoneError::InvalidCharacters => write!(f, "phone number contains invalid characters"),
-            PhoneError::TooShort => write!(f, "phone number is too short (minimum 7 digits)"),
-            PhoneError::TooLong => write!(f, "phone number is too long (maximum 15 digits)"),
-        }
-    }
-}
-
-impl std::error::Error for PhoneError {}
+use crate::specific_errors::ValidationError;
 
 /// Minimum and maximum number of digits for a valid phone number.
 const MIN_PHONE_DIGITS: usize = 7;
@@ -41,9 +16,9 @@ const ALLOWED_SEPARATORS: &[char] = &[' ', '-', '(', ')', '.', '+'];
 
 impl Ursus {
 #[cfg(feature = "phone")]
-pub async fn validate_phone(phone: &str) -> Result<(), PhoneError> {
+pub fn validate_phone(phone: &str) -> Result<(), ValidationError> {
     if phone.is_empty() {
-        return Err(PhoneError::EmptyInput);
+        return Err(ValidationError::EmptyInput);
     }
 
     let mut digit_count = 0;
@@ -54,16 +29,16 @@ pub async fn validate_phone(phone: &str) -> Result<(), PhoneError> {
         } else if c == '+' && i == 0 {
         } else if ALLOWED_SEPARATORS.contains(&c) {
         } else {
-            return Err(PhoneError::InvalidCharacters);
+            return Err(ValidationError::InvalidFormat);
         }
     }
 
     if digit_count < MIN_PHONE_DIGITS {
-        return Err(PhoneError::TooShort);
+        return Err(ValidationError::TooShort);
     }
 
     if digit_count > MAX_PHONE_DIGITS {
-        return Err(PhoneError::TooLong);
+        return Err(ValidationError::TooLong);
     }
 
     Ok(())
@@ -74,31 +49,23 @@ pub async fn validate_phone(phone: &str) -> Result<(), PhoneError> {
 mod tests {
     use super::*;
 
-    #[tokio::test]
-    async fn test_valid_phones() {
-        assert!(Ursus::validate_phone("+1 234 567 8900").await.is_ok());
-        assert!(Ursus::validate_phone("+44-20-7946-0958").await.is_ok());
-        assert!(Ursus::validate_phone("555-1234").await.is_ok());
-        assert!(Ursus::validate_phone("+7 (495) 123-45-67").await.is_ok());
-        assert!(Ursus::validate_phone("1.800.555.0199").await.is_ok());
-        assert!(Ursus::validate_phone("+1234567").await.is_ok()); // exactly 7 digits
-    }
-
-    #[tokio::test]
-    async fn test_invalid_phones() {
-        assert!(Ursus::validate_phone("").await.is_err());
-        assert!(Ursus::validate_phone("12345").await.is_err()); // too short
-        assert!(Ursus::validate_phone("abc").await.is_err());
-        assert!(Ursus::validate_phone("+abc-def").await.is_err());
-        assert!(Ursus::validate_phone("1234567890123456").await.is_err()); // 16 digits, too long
+    #[test]
+    fn test_valid_phones() {
+        assert!(Ursus::validate_phone("+1 234 567 8900").is_ok());
+        assert!(Ursus::validate_phone("+44-20-7946-0958").is_ok());
+        assert!(Ursus::validate_phone("555-1234").is_ok());
+        assert!(Ursus::validate_phone("+7 (495) 123-45-67").is_ok());
+        assert!(Ursus::validate_phone("1.800.555.0199").is_ok());
+        assert!(Ursus::validate_phone("+1234567").is_ok()); // exactly 7 digits
     }
 
     #[test]
-    fn test_phone_error_display() {
-        assert_eq!(PhoneError::EmptyInput.to_string(), "phone number is empty");
-        assert_eq!(
-            PhoneError::TooShort.to_string(),
-            "phone number is too short (minimum 7 digits)"
-        );
+    fn test_invalid_phones() {
+        assert!(Ursus::validate_phone("").is_err());
+        assert!(Ursus::validate_phone("12345").is_err()); // too short
+        assert!(Ursus::validate_phone("abc").is_err());
+        assert!(Ursus::validate_phone("+abc-def").is_err());
+        assert!(Ursus::validate_phone("1234567890123456").is_err()); // 16 digits, too long
     }
+
 }

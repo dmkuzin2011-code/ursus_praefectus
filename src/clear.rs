@@ -3,24 +3,10 @@
 //! Provides utilities for cleaning collections by removing unwanted values.
 //! Currently supports removing specified values from a mutable vector.
 
+use std::collections::HashSet;
+
 use crate::Ursus;
-
-/// Errors that can occur during collection sanitization.
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum ClearedError {
-    /// The input collection is empty.
-    EmptyInput,
-}
-
-impl std::fmt::Display for ClearedError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ClearedError::EmptyInput => write!(f, "collection is empty"),
-        }
-    }
-}
-
-impl std::error::Error for ClearedError {}
+use crate::specific_errors::ValidationError;
 
 impl Ursus {
     /// Remove all occurrences of specified values from a collection.
@@ -30,35 +16,34 @@ impl Ursus {
     ///
     /// # Errors
     ///
-    /// Returns [ClearedError::EmptyInput] if the collection is empty.
+    /// Returns [`ValidationError::EmptyInput`] if the collection is empty.
     ///
     /// # Example
     ///
     /// ```rust
     /// use ursus_praefectus::Ursus;
     ///
-    /// #[tokio::main(flavor = "current_thread")]
-    /// async fn main() {
+    /// fn main() {
     ///     let mut collection = vec!["apple", "banana", "cherry", "banana"];
     ///     let delete_values = vec!["banana"];
     ///
-    ///     Ursus::clear_collection(&mut collection, &delete_values).await.unwrap();
+    ///     Ursus::clear_collection(&mut collection, &delete_values).unwrap();
     ///     assert_eq!(collection, vec!["apple", "cherry"]);
     /// }
-    /// `
-    pub async fn clear_collection<I, T>(
+    /// ```
+    pub fn clear_collection<I, T>(
         collection: &mut Vec<I>,
         delete_values: &[T],
-    ) -> Result<(), ClearedError>
+    ) -> Result<(), ValidationError>
     where
-        I: ToString,
-        T: ToString,
+        I: AsRef<str>,
+        T: AsRef<str>,
     {
         if collection.is_empty() {
-            return Err(ClearedError::EmptyInput);
+            return Err(ValidationError::EmptyInput);
         }
-        let to_delete: Vec<String> = delete_values.iter().map(|x| x.to_string()).collect();
-        collection.retain(|item| !to_delete.contains(&item.to_string()));
+        let to_delete: HashSet<&str> = delete_values.iter().map(|x| x.as_ref()).collect();
+        collection.retain(|item| !to_delete.contains(&item.as_ref()));
         Ok(())
     }
 }
@@ -67,43 +52,38 @@ impl Ursus {
 mod tests {
     use super::*;
 
-    #[tokio::test]
-    async fn test_clear_collection_basic() {
+    #[test]
+    fn test_clear_collection_basic() {
         let mut collection = vec!["apple", "banana", "cherry", "banana"];
         let delete_values = vec!["banana"];
-        assert!(Ursus::clear_collection(&mut collection, &delete_values).await.is_ok());
+        assert!(Ursus::clear_collection(&mut collection, &delete_values).is_ok());
         assert_eq!(collection, vec!["apple", "cherry"]);
-    }
-
-    #[tokio::test]
-    async fn test_clear_collection_empty_collection() {
-        let mut collection: Vec<&str> = vec![];
-        let delete_values = vec!["banana"];
-        assert_eq!(
-            Ursus::clear_collection(&mut collection, &delete_values).await,
-            Err(ClearedError::EmptyInput)
-        );
-    }
-
-    #[tokio::test]
-    async fn test_clear_collection_no_matches() {
-        let mut collection = vec!["apple", "cherry"];
-        let delete_values = vec!["banana"];
-        assert!(Ursus::clear_collection(&mut collection, &delete_values).await.is_ok());
-        assert_eq!(collection, vec!["apple", "cherry"]);
-    }
-
-    #[tokio::test]
-    async fn test_clear_collection_all_removed() {
-        let mut collection = vec!["banana", "banana"];
-        let delete_values = vec!["banana"];
-        assert!(Ursus::clear_collection(&mut collection, &delete_values).await.is_ok());
-        assert_eq!(collection, Vec::<&str>::new());
     }
 
     #[test]
-    fn test_cleared_error_display() {
-        assert_eq!(ClearedError::EmptyInput.to_string(), "collection is empty");
+    fn test_clear_collection_empty_collection() {
+        let mut collection: Vec<&str> = vec![];
+        let delete_values = vec!["banana"];
+        assert_eq!(
+            Ursus::clear_collection(&mut collection, &delete_values),
+            Err(ValidationError::EmptyInput)
+        );
+    }
+
+    #[test]
+    fn test_clear_collection_no_matches() {
+        let mut collection = vec!["apple", "cherry"];
+        let delete_values = vec!["banana"];
+        assert!(Ursus::clear_collection(&mut collection, &delete_values).is_ok());
+        assert_eq!(collection, vec!["apple", "cherry"]);
+    }
+
+    #[test]
+    fn test_clear_collection_all_removed() {
+        let mut collection = vec!["banana", "banana"];
+        let delete_values = vec!["banana"];
+        assert!(Ursus::clear_collection(&mut collection, &delete_values).is_ok());
+        assert_eq!(collection, Vec::<&str>::new());
     }
 }
 
