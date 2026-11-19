@@ -1,6 +1,6 @@
 
 <div align="center">
-    <img src="assets/ursus.png" align="center">
+    <img src="assets/Ursus.png" align="center">
 </div>
 
 # Ursus — Data Validation Library
