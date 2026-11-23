@@ -12,6 +12,12 @@ license = "Apache-2.0"
 tokio = { version = "1.54.1", features = ["net", "rt", "macros", "time"] }
 # Async DNS resolver built on top of tokio — used to check MX records of email domains
 hickory-resolver = { version = "0.26", optional = true, features = ["tokio", "system-config"] }
+# Lightweight JSON parsing (derive only, no full serde dependency needed for runtime)
+serde = { version = "1", features = ["derive"], optional = true }
+# Serialize/Deserialize JSON
+serde_json = { version = "1", optional = true }
+# Lightweight colored text output
+termcolor = { version = "1.1", optional = true }
 
 [dev-dependencies]
 
@@ -30,6 +36,16 @@ ip = []
 phone = []
 # Collection sanitization — remove unwanted values from a Vec
 clear = []
+# Enable CLI utilities using only Tokio (no external CLI crates needed)
+cli = []
+# Bash,zsh,fish etc. scripts
+shell=[]
+# Enable server architecture using only Tokio (basic TCP server)
+server = []
+# Enable CLI with colored output (requires termcolor)
+cli-colors = ["dep:termcolor"]
+# Enable lightweight JSON parsing in server
+server-json = ["serde", "serde_json"]
 
 [lib]
 name = "ursus_praefectus"

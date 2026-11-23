@@ -116,6 +116,47 @@ It performs:
 
 Full documentation is available in [`DOCUMENTATION.md`](DOCUMENTATION.md).
 
+## 🛠 CLI Scripts
+
+Ursus includes a CLI that can execute bash scripts. Scripts are simple `.sh` files with a shebang (`#!/usr/bin/env bash`). The library provides helpers to run scripts, set arguments, environment variables, working directory, and timeouts.
+
+### Running a script
+
+```bash
+# Example script: scripts/hello.sh
+#!/usr/bin/env bash
+echo "Hello, Ursus!"
+```
+
+### Using the API
+
+```rust
+use ursus_praefectus::cli::BashScript;
+use std::path::Path;
+
+fn main() {
+    let script = BashScript::new(Path::new("scripts/hello.sh"))
+        .arg("world")
+        .env("MY_VAR", "value")
+        .cwd(std::env::current_dir().unwrap())
+        .timeout(std::time::Duration::from_secs(5))
+        .run_string()
+        .unwrap();
+    println!("Output: {}", script);
+}
+```
+
+### Feature flags
+
+Enable the CLI shell feature in `Cargo.toml`:
+
+```toml
+[features]
+shell = []
+```
+
+Then you can use `BashScript` and related types from `ursus_praefectus::cli`.
+```
 ## 🛠 Running Tests
 
 ```bash

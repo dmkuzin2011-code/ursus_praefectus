@@ -7,3 +7,5 @@ pub mod specific_errors;
 pub mod url;
 pub mod clear;
 pub struct Ursus;
+#[cfg(feature = "cli")]
+pub mod cli;
