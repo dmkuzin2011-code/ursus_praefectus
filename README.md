@@ -184,4 +184,16 @@ cargo test --all-features
 
 Distributed under the Apache-2.0 License. See `LICENSE` for details.
 
+## 🌿 Development Branch
+
+Work on new features and improvements happens in the `dev` branch. We welcome contributions from the community!
+
+We're currently looking for contributors to help with:
+- Adding new validation modules
+- Improving documentation
+- Bug fixes
+- Test coverage
+
+Feel free to fork the repository, create a branch from `dev`, and submit pull requests with your improvements!
+
 **Ursus** — Simple, modular data validation for Rust.
