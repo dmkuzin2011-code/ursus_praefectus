@@ -20,22 +20,28 @@ base64 = { version = "0.22", optional = true }
 
 [features]
 default = ["email", "url", "ip", "phone", "clear"]
+
 email = []
 email-dns = ["dep:tokio", "dep:hickory-resolver", "email"]
+
 url = []
 ip = []
 phone = []
 clear = []
+
 cli = ["dep:tokio"]
 shell = []
-server = ["dep:tokio"]
 cli-colors = ["dep:termcolor"]
-server-json = ["server", "serde", "serde_json"]
+
+server = ["dep:tokio"]
+server-json = ["server", "dep:serde", "dep:serde_json"]
 http = ["server-json"]
 ws = ["http", "dep:sha1", "dep:base64"]
+
 lua = ["dep:mlua"]
 units = []
 safety = []
+
 robot = ["lua", "http", "ws", "safety", "units"]
 
 [lib]
@@ -54,8 +60,8 @@ required-features = ["robot"]
 
 [[bin]]
 name = "polaros-sensor-probe"
-path = "src/bin/sensor_probe.rs"
-required-features = ["cli", "lua"]
+path = "src/bin/sensor_pribe.rs"
+required-features = ["cli", "lua", "server-json"]
 
 [dev-dependencies]
 tokio-tungstenite = "0.24"
