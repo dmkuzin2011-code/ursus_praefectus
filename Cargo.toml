@@ -1,46 +1,5 @@
+
 [package]
-name = "ursus_praefectus"
-version = "0.2.1"
-readme = "README.md"
-edition = "2024"
-description = "Library for data validation: email, URL, IP, phone, password, and counts."
-authors = ["Dekavan"]
-license = "Apache-2.0"
-
-[dependencies]
-tokio = { version = "1.54.1", features = ["net", "rt", "macros", "time"], optional = true }
-hickory-resolver = { version = "0.26", optional = true, features = ["tokio", "system-config"] }
-serde = { version = "1", features = ["derive"], optional = true }
-serde_json = { version = "1", optional = true }
-termcolor = { version = "1.1", optional = true }
-mlua = { version = "0.10", optional = true, features = ["lua54", "vendored", "async", "send"] }
-sha1 = { version = "0.10", optional = true }
-base64 = { version = "0.22", optional = true }
-[features]
-default = ["email", "url", "ip", "phone", "clear"]
-email = []
-email-dns = ["dep:tokio", "dep:hickory-resolver", "email"]
-url = []
-ip = []
-phone = []
-clear = []
-cli = ["dep:tokio"]
-shell = []
-server = ["dep:tokio"]
-cli-colors = ["dep:termcolor"]
-server-json = ["server", "serde", "serde_json"]
-http = ["server-json"]
-ws = ["http", "dep:sha1", "dep:base64"]
-lua = ["dep:mlua"]
-robot = ["lua", "http", "ws"]
-units = []
-safety = []
-
-[lib]
-name = "ursus_praefectus"
-path = "src/lib.rs"
-
-[[package]
 name = "ursus_praefectus"
 version = "0.2.1"
 readme = "README.md"
