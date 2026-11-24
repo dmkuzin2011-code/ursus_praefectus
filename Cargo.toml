@@ -1,6 +1,6 @@
 [package]
 name = "ursus_praefectus"
-version = "0.2.0"
+version = "0.2.1"
 readme = "README.md"
 edition = "2024"
 description = "Library for data validation: email, URL, IP, phone, password, and counts."
@@ -8,45 +8,96 @@ authors = ["Dekavan"]
 license = "Apache-2.0"
 
 [dependencies]
-# Tokio async runtime — required for async DNS resolution in email validation
-tokio = { version = "1.54.1", features = ["net", "rt", "macros", "time"] }
-# Async DNS resolver built on top of tokio — used to check MX records of email domains
+tokio = { version = "1.54.1", features = ["net", "rt", "macros", "time"], optional = true }
 hickory-resolver = { version = "0.26", optional = true, features = ["tokio", "system-config"] }
-# Lightweight JSON parsing (derive only, no full serde dependency needed for runtime)
 serde = { version = "1", features = ["derive"], optional = true }
-# Serialize/Deserialize JSON
 serde_json = { version = "1", optional = true }
-# Lightweight colored text output
 termcolor = { version = "1.1", optional = true }
-
-[dev-dependencies]
-
+mlua = { version = "0.10", optional = true, features = ["lua54", "vendored", "async", "send"] }
+sha1 = { version = "0.10", optional = true }
+base64 = { version = "0.22", optional = true }
 [features]
-# Enable all validation modules by default
 default = ["email", "url", "ip", "phone", "clear"]
-# Email validation with format check only (no DNS)
 email = []
-# Email validation with async DNS MX record lookup (requires tokio + hickory-resolver)
-email-dns = ["dep:hickory-resolver", "email"]
-# URL validation
+email-dns = ["dep:tokio", "dep:hickory-resolver", "email"]
 url = []
-# IP address validation (IPv4/IPv6)
 ip = []
-# Phone number validation
 phone = []
-# Collection sanitization — remove unwanted values from a Vec
 clear = []
-# Enable CLI utilities using only Tokio (no external CLI crates needed)
-cli = []
-# Bash,zsh,fish etc. scripts
-shell=[]
-# Enable server architecture using only Tokio (basic TCP server)
-server = []
-# Enable CLI with colored output (requires termcolor)
+cli = ["dep:tokio"]
+shell = []
+server = ["dep:tokio"]
 cli-colors = ["dep:termcolor"]
-# Enable lightweight JSON parsing in server
-server-json = ["serde", "serde_json"]
+server-json = ["server", "serde", "serde_json"]
+http = ["server-json"]
+ws = ["http", "dep:sha1", "dep:base64"]
+lua = ["dep:mlua"]
+robot = ["lua", "http", "ws"]
+units = []
+safety = []
 
 [lib]
 name = "ursus_praefectus"
 path = "src/lib.rs"
+
+[[package]
+name = "ursus_praefectus"
+version = "0.2.1"
+readme = "README.md"
+edition = "2024"
+description = "Library for data validation: email, URL, IP, phone, password, and counts."
+authors = ["Dekavan"]
+license = "Apache-2.0"
+
+[dependencies]
+tokio = { version = "1.54.1", features = ["net", "rt", "macros", "time"], optional = true }
+hickory-resolver = { version = "0.26", optional = true, features = ["tokio", "system-config"] }
+serde = { version = "1", features = ["derive"], optional = true }
+serde_json = { version = "1", optional = true }
+termcolor = { version = "1.1", optional = true }
+mlua = { version = "0.10", optional = true, features = ["lua54", "vendored", "async", "send"] }
+sha1 = { version = "0.10", optional = true }
+base64 = { version = "0.22", optional = true }
+
+[features]
+default = ["email", "url", "ip", "phone", "clear"]
+email = []
+email-dns = ["dep:tokio", "dep:hickory-resolver", "email"]
+url = []
+ip = []
+phone = []
+clear = []
+cli = ["dep:tokio"]
+shell = []
+server = ["dep:tokio"]
+cli-colors = ["dep:termcolor"]
+server-json = ["server", "serde", "serde_json"]
+http = ["server-json"]
+ws = ["http", "dep:sha1", "dep:base64"]
+lua = ["dep:mlua"]
+units = []
+safety = []
+robot = ["lua", "http", "ws", "safety", "units"]
+
+[lib]
+name = "ursus_praefectus"
+path = "src/lib.rs"
+
+[[bin]]
+name = "polarctl"
+path = "src/bin/polarctl.rs"
+required-features = ["cli", "cli-colors"]
+
+[[bin]]
+name = "polard"
+path = "src/bin/polard.rs"
+required-features = ["robot"]
+
+[[bin]]
+name = "polaros-sensor-probe"
+path = "src/bin/sensor_probe.rs"
+required-features = ["cli", "lua"]
+
+[dev-dependencies]
+tokio-tungstenite = "0.24"
+tempfile = "3"
