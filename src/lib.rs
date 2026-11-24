@@ -9,3 +9,11 @@ pub mod clear;
 pub struct Ursus;
 #[cfg(feature = "cli")]
 pub mod cli;
+#[cfg(feature = "units")]
+pub mod units;
+#[cfg(feature = "lua")]
+pub mod lua;
+#[cfg(feature = "http")]
+pub use server::http;
+#[cfg(feature = "ws")]
+pub mod ws;

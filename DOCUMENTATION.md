@@ -213,3 +213,53 @@ Then you can use `BashScript` and related types from `ursus_praefectus::cli`.
 Distributed under the Apache-2.0 License. See LICENSE for details.
 
 **Ursus** — Simple, modular data validation for Rust.
+## Lua Scripts
+
+Ursus includes a Lua sandbox via [mlua] that allows embedding scripting logic. Scripts are loaded on demand from `/etc/polaros/{name}.lua` using the `require` function within the sandbox. The sandbox restricts `require` to that directory and provides standard libraries: `table`, `string`, `math`, `utf8`.
+
+### Example: robot.lua
+
+Create a file at `/etc/polaros/robot.lua` with the following content:
+
+```lua
+-- Robot script for Ursus
+-- Provides robot.tick(ctx) that returns JSON
+
+local M = {}
+
+function M.tick(ctx)
+    return {
+        status = "ok",
+        ctx = ctx,
+        robot = "ursus_praefectus"
+    }
+end
+
+return M
+```
+
+### Using the API
+
+```rust
+use ursus_praefectus::lua::{call_tick, setup_sandbox};
+use serde_json::Value;
+
+fn main() {
+    let lua = mlua::Lua::new();
+    setup_sandbox(&lua).unwrap();
+    let ctx = Value::Null;
+    let result = call_tick(&lua, ctx).unwrap();
+    println!("Lua tick result: {:?}", result);
+}
+```
+
+### Feature flags
+
+Enable the `lua` feature in `Cargo.toml`:
+
+```toml
+[dependencies]
+ursus_praefectus = { version = "0.2.1", features = ["lua"] }
+```
+
+Then you can use `ursus_praefectus::lua::setup_sandbox` and `ursus_praefectus::lua::call_tick` as shown above.
